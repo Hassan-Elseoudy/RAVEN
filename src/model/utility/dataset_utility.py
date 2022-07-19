@@ -1,11 +1,10 @@
-import os
 import glob
-import numpy as np
-from scipy import misc
+import os
 
+import numpy as np
 import torch
-from torch.utils.data import Dataset, DataLoader
-from torchvision import transforms, utils
+from PIL import Image
+from torch.utils.data import Dataset
 
         
 class ToTensor(object):
@@ -16,10 +15,9 @@ class dataset(Dataset):
     def __init__(self, root_dir, dataset_type, img_size, transform=None, shuffle=False):
         self.root_dir = root_dir
         self.transform = transform
-        self.file_names = [f for f in glob.glob(os.path.join(root_dir, "*", "*.npz")) \
-                            if dataset_type in f]
+        self.file_names = [f for f in glob.glob(os.path.join(root_dir, "*", "*.npz")) if dataset_type in f]
         self.img_size = img_size
-        self.embeddings = np.load(os.path.join(root_dir, 'embedding.npy'), allow_pickle=True)
+        self.embeddings = np.load(os.path.join(root_dir, 'embedding.npy'), allow_pickle=True, encoding="bytes")
         self.shuffle = shuffle
 
     def __len__(self):
@@ -46,7 +44,8 @@ class dataset(Dataset):
         
         resize_image = []
         for idx in range(0, 16):
-            resize_image.append(misc.imresize(image[idx,:,:], (self.img_size, self.img_size)))
+            resize_image.append(Image.fromarray(image[idx, :, :]).resize((self.img_size, self.img_size)))
+
         resize_image = np.stack(resize_image)
         # image = resize(image, (16, 128, 128))
         # meta_matrix = data["mata_matrix"]
@@ -55,7 +54,9 @@ class dataset(Dataset):
         indicator = torch.zeros(1, dtype=torch.float)
         element_idx = 0
         for element in structure:
-            if element != '/':
+            if element != b'/':
+                print(element)
+                print(self.embeddings.item().get(element))
                 embedding[element_idx, :] = torch.tensor(self.embeddings.item().get(element), dtype=torch.float)
                 element_idx += 1
         if element_idx == 6:
