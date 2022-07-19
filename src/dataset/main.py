@@ -5,7 +5,6 @@ import argparse
 import copy
 import os
 import random
-import sys
 
 import numpy as np
 from tqdm import trange
@@ -16,10 +15,8 @@ from build_tree import (build_center_single, build_distribute_four,
                         build_in_distribute_four_out_center_single,
                         build_left_center_single_right_center_single,
                         build_up_center_single_down_center_single)
-from const import IMAGE_SIZE, RULE_ATTR
-from rendering import (generate_matrix, generate_matrix_answer, imsave, imshow,
-                       render_panel)
-from Rule import Rule_Wrapper
+from const import IMAGE_SIZE
+from rendering import (render_panel, imsave, generate_matrix_answer)
 from sampling import sample_attr, sample_attr_avail, sample_rules
 from serialize import dom_problem, serialize_aot, serialize_rules
 from solver import solve
@@ -136,7 +133,7 @@ def fuse(args, all_configs):
         answers = []
         for candidate in candidates:
             answers.append(render_panel(candidate))
-        # imsave(generate_matrix_answer(imgs + answers), "./experiments/fuse/{}.jpg".format(k))
+        # imsave(generate_matrix_answer(imgs + answers), "./experiments/fuse", k)
 
         image = imgs[0:8] + answers
         target = candidates.index(answer_AoT)
@@ -155,7 +152,7 @@ def fuse(args, all_configs):
             f.write(dom)
         if target == predicted:
             acc += 1
-    print "Accuracy: {}".format(float(acc) / (args.num_samples * len(all_configs)))
+    print("Accuracy: {}".format(float(acc) / (args.num_samples * len(all_configs))))
 
 
 def separate(args, all_configs):
@@ -264,8 +261,8 @@ def separate(args, all_configs):
             answers = []
             for candidate in candidates:
                 answers.append(render_panel(candidate))
-            # imsave(generate_matrix_answer(imgs + answers), "./experiments/{}/{}.jpg".format(key, k))    
-            
+            # imsave(generate_matrix_answer(imgs + answers), "./experiments/{}".format(key), k)
+
             image = imgs[0:8] + answers
             target = candidates.index(answer_AoT)
             predicted = solve(rule_groups, context, candidates)
@@ -284,7 +281,7 @@ def separate(args, all_configs):
             
             if target == predicted:
                 acc += 1
-        print "Accuracy of {}: {}".format(key, float(acc) / args.num_samples)
+        print("Accuracy of {}: {}".format(key, float(acc) / args.num_samples))
 
 
 def main():
