@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import os
 
 import cv2
 import numpy as np
@@ -14,9 +14,11 @@ def imshow(array):
     image.show()
 
 
-def imsave(array, filepath):
+def imsave(array, filepath, filename):
     image = Image.fromarray(array)
-    image.save(filepath)
+    if not os.path.exists(filepath):
+        os.makedirs(filepath)
+    image.save(f"{filepath}/{filename}.jpg", quality=100)
 
 
 def generate_matrix(array_list):
