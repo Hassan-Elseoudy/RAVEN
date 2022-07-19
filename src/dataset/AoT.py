@@ -4,7 +4,7 @@
 import copy
 
 import numpy as np
-from scipy.misc import comb
+from scipy.special import comb
 
 from Attribute import Angle, Color, Number, Position, Size, Type, Uniformity
 from constraints import rule_constraint
@@ -49,7 +49,7 @@ class AoTNode(object):
     def _resample(self, change_number):
         """Resample the layout. If the number of entities change, resample also the 
         position distribution; otherwise only resample each attribute for each entity.
-        Arugments:
+        Arguments:
             change_number(bool): whether to the number has been reset
         """
         assert self.is_pg
